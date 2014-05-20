@@ -51,7 +51,7 @@ public class TasksActivity extends BaseActivity {
 
         ((TextView)findViewById(R.id.title)).setText(companyTitle + " > " + projectTitle + " > " + releaseTitle);
 
-        service = new SpreadsheetService("GoogleDriveSpreadsheet");
+        service = new SpreadsheetService(APPLICATION_NAME);
         service.setProtocolVersion(SpreadsheetService.Versions.V3);
 
         setList();

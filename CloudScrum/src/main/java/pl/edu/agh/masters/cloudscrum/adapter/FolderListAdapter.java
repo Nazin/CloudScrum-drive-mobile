@@ -1,4 +1,4 @@
-package pl.edu.agh.masters.cloudscrum;
+package pl.edu.agh.masters.cloudscrum.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,6 +10,8 @@ import android.widget.TextView;
 import com.google.api.services.drive.model.File;
 
 import java.util.List;
+
+import pl.edu.agh.masters.cloudscrum.R;
 
 public class FolderListAdapter extends BaseAdapter {
 

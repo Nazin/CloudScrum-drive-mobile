@@ -1,4 +1,4 @@
-package pl.edu.agh.masters.cloudscrum;
+package pl.edu.agh.masters.cloudscrum.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.List;
+
+import pl.edu.agh.masters.cloudscrum.R;
+import pl.edu.agh.masters.cloudscrum.Task;
 
 public class TaskListAdapter extends BaseAdapter {
 
