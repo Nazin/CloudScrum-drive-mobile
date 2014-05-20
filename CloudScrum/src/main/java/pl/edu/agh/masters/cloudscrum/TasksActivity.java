@@ -20,6 +20,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import pl.edu.agh.masters.cloudscrum.adapter.TaskListAdapter;
+
 public class TasksActivity extends BaseActivity {
 
     private String companyId;

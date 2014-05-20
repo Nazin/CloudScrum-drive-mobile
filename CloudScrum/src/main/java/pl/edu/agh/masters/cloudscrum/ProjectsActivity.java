@@ -16,6 +16,7 @@ import com.google.api.services.drive.model.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import pl.edu.agh.masters.cloudscrum.adapter.FolderListAdapter;
 import pl.edu.agh.masters.cloudscrum.exception.Authorization;
 
 public class ProjectsActivity extends BaseActivity {
