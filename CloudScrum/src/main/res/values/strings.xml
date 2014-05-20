@@ -17,4 +17,10 @@
     <string name="loading_projects">Loading projects</string>
     <string name="loading_releases">Loading releases</string>
     <string name="loading_tasks">Loading tasks</string>
+
+    <string name="start_timer">Start</string>
+    <string name="stop_timer">Stop</string>
+
+    <string name="show_details">Show details</string>
+    <string name="hide_details">Hide details</string>
 </resources>
