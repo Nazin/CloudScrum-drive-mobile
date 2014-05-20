@@ -28,7 +28,7 @@ public class ReleasesActivity extends BaseActivity {
     private String projectTitle;
 
     private List<File> releasesData = new ArrayList<File>();
-    FolderListAdapter releasesAdapter;
+    private FolderListAdapter releasesAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState){

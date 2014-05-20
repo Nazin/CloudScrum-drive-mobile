@@ -24,7 +24,7 @@ public class ProjectsActivity extends BaseActivity {
     private String companyTitle;
 
     private List<File> projectsData = new ArrayList<File>();
-    FolderListAdapter projectsAdapter;
+    private FolderListAdapter projectsAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState){

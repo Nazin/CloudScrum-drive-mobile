@@ -46,7 +46,7 @@ public class MainActivity extends BaseActivity {
     private String password;
 
     private List<File> companiesData = new ArrayList<File>();
-    FolderListAdapter companiesAdapter;
+    private FolderListAdapter companiesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +83,11 @@ public class MainActivity extends BaseActivity {
                     accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
 
                     if (accountName != null) {
-                        loadData();
+                        if (password.equals("")) {
+                            inputPassword();
+                        } else {
+                            loadData();
+                        }
                     }
                 }
 

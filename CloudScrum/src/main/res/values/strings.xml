@@ -16,4 +16,5 @@
     <string name="loading_companies">Loading companies</string>
     <string name="loading_projects">Loading projects</string>
     <string name="loading_releases">Loading releases</string>
+    <string name="loading_tasks">Loading tasks</string>
 </resources>

@@ -38,7 +38,16 @@ public class BaseActivity extends Activity {
     static final String RELEASE_TITLE = "releaseTitle";
     static final String RELEASE_ID = "releaseId";
 
+    static final String TASK_DATA = "taskData";
+
     static final String IS_BACK = "isBack";
+
+    static final String CLOSED_ITERATION_IN_TITLE = "(Closed)";
+    static final int STORIES_START_ROW = 11;
+    static final int STORIES_ID_COLUMN = 2;
+    static final int TASKS_TITLE_COLUMN = 4;
+    static final int TASKS_EFFORT_COLUMN = 8;
+    static final int TASKS_DETAILS_COLUMN = 9;
 
     protected boolean isBack = false;
 
