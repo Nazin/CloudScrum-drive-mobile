@@ -1,33 +1,49 @@
 package pl.edu.agh.masters.cloudscrum;
 
 import android.accounts.AccountManager;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 
 import com.google.api.services.drive.model.File;
+import com.google.gdata.client.spreadsheet.SpreadsheetService;
+import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import pl.edu.agh.masters.cloudscrum.exception.Authorization;
 
 public class MainActivity extends BaseActivity {
 
     static final int REQUEST_ACCOUNT_PICKER = 1;
+    static final int REQUEST_AUTHORIZATION = 2;
+
     static final String COMPANY_DIRECTORY = "CloudScrum-";
 
     private GoogleAccountCredential credential;
     private String accountName;
+    private String password;
 
     private List<File> companiesData = new ArrayList<File>();
     FolderListAdapter companiesAdapter;
@@ -41,12 +57,15 @@ public class MainActivity extends BaseActivity {
         credential = getGoogleAccountCredential();
 
         SharedPreferences pref = getPreferences();
-        String accountName = pref.getString(ACCOUNT_NAME, "");
+        accountName = pref.getString(ACCOUNT_NAME, "");
+        password = pref.getString(PASSWORD, "");
 
         if (accountName.equals("")) {
             startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
+        } else if (password.equals("")) {
+            inputPassword();
         } else {
-            loadData(accountName);
+            loadData();
         }
 
         setList();
@@ -64,12 +83,60 @@ public class MainActivity extends BaseActivity {
                     accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
 
                     if (accountName != null) {
-                        loadData(accountName);
+                        loadData();
                     }
                 }
 
                 break;
+
+            case REQUEST_AUTHORIZATION:
+
+                if (resultCode == Activity.RESULT_OK) {
+
+                    data.getExtras();
+
+                    new AsyncTask<Void, Void, Void>() {
+
+                        boolean hasToken = false;
+
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            hasToken = hasAccessToken();
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Void v) {
+                            if (hasToken) {
+                                loadData();
+                            }
+                        }
+                    }.execute();
+                } else {
+                    startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
+                }
+
+                break;
         }
+    }
+
+    public boolean hasAccessToken() {
+
+        try {
+            credential.getToken();
+            return true;
+        } catch (GooglePlayServicesAvailabilityException e) {
+            e.printStackTrace();
+        } catch (UserRecoverableAuthException e) {
+            e.printStackTrace();
+            startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (GoogleAuthException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     private void setList() {
@@ -86,7 +153,7 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    private void loadData(String accountName) {
+    private void loadData() {
 
         SharedPreferences pref = getPreferences();
         final SharedPreferences.Editor editor = pref.edit();
@@ -150,11 +217,99 @@ public class MainActivity extends BaseActivity {
 
         try {
             result = searchFiles(credential, "title contains '" + COMPANY_DIRECTORY + "' and 'root' in parents and trashed = false and mimeType = 'application/vnd.google-apps.folder'");
-        } catch (UserRecoverableAuthIOException e) {
-            Log.e("AUTH", "AUTH PROBLEM");
+        } catch (Authorization e) {
+            startActivityForResult(e.getOriginalException().getIntent(), REQUEST_AUTHORIZATION);
         }
 
         return result;
+    }
+
+    private void inputPassword() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.please_provide_password);
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        builder.setView(input);
+
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                password = input.getText().toString();
+                verifyPassword();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                finish();
+            }
+        });
+
+        builder.show();
+    }
+
+    private void verifyPassword() {
+
+        new AsyncTask<Void, Void, Void>() {
+
+            ProgressDialog dialog;
+            SpreadsheetService service;
+            boolean isPasswordCorrect;
+
+            protected void onPreExecute() {
+                dialog = new ProgressDialog(MainActivity.this);
+                dialog.setMessage(MainActivity.this.getString(R.string.verifying_password));
+                dialog.setCancelable(false);
+                dialog.show();
+            }
+
+            @Override
+            protected Void doInBackground(Void... params) {
+
+                try {
+
+                    service = new SpreadsheetService(APPLICATION_NAME);
+                    service.setProtocolVersion(SpreadsheetService.Versions.V3);
+                    service.setUserCredentials(accountName, password);
+
+                    service.getFeed(new URL("https://spreadsheets.google.com/feeds/spreadsheets/private/full"), SpreadsheetFeed.class);
+
+                    isPasswordCorrect = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    isPasswordCorrect = false;
+                }
+
+                return null;
+            }
+
+            protected void onPostExecute(Void result) {
+
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+
+                if (isPasswordCorrect) {
+                    SharedPreferences pref = getPreferences();
+                    final SharedPreferences.Editor editor = pref.edit();
+                    editor.putString(PASSWORD, password);
+                    editor.commit();
+                    loadData();
+                } else {
+                    Toast.makeText(MainActivity.this, R.string.incorrect_password, Toast.LENGTH_SHORT).show();
+                    inputPassword();
+                }
+            }
+
+            protected void onCancelled() {
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        }.execute();
     }
 
     private void startNextActivity(File file) {
@@ -163,7 +318,6 @@ public class MainActivity extends BaseActivity {
         intent.putExtra(COMPANY_ID, file.getId());
         startActivity(intent);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

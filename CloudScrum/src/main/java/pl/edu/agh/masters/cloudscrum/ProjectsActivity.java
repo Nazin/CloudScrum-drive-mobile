@@ -11,11 +11,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.services.drive.model.File;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import pl.edu.agh.masters.cloudscrum.exception.Authorization;
 
 public class ProjectsActivity extends BaseActivity {
 
@@ -89,7 +90,7 @@ public class ProjectsActivity extends BaseActivity {
             protected List<File> doInBackground(Void... params) {
                 try {
                     return searchFiles(credential, "'" + companyId + "' in parents  and trashed = false and mimeType = 'application/vnd.google-apps.folder'");
-                } catch (UserRecoverableAuthIOException e) {
+                } catch (Authorization e) {
                     e.printStackTrace();
                 }
                 return null;

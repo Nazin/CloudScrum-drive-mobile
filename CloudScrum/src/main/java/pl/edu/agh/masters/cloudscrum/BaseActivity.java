@@ -20,9 +20,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import pl.edu.agh.masters.cloudscrum.exception.Authorization;
+
 public class BaseActivity extends Activity {
 
+    static final String APPLICATION_NAME = "CloudScrum";
+
     static final String ACCOUNT_NAME = "accountName";
+    static final String PASSWORD = "password";
 
     static final String COMPANY_TITLE = "companyTitle";
     static final String COMPANY_ID = "companyId";
@@ -67,7 +72,7 @@ public class BaseActivity extends Activity {
         return listView;
     }
 
-    protected List<File> searchFiles(GoogleAccountCredential credential, String query) throws UserRecoverableAuthIOException {
+    protected List<File> searchFiles(GoogleAccountCredential credential, String query) throws Authorization {
 
         List<File> result = null;
         Drive service = getDriveService(credential);
@@ -77,6 +82,8 @@ public class BaseActivity extends Activity {
             Drive.Files.List request = service.files().list().setQ(query);
             FileList files = request.execute();
             result.addAll(files.getItems());
+        } catch (UserRecoverableAuthIOException e) {
+            throw new Authorization(e);
         } catch (IOException e) {
             e.printStackTrace();
         }

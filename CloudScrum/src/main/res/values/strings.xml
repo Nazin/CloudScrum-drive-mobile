@@ -6,6 +6,12 @@
 
     <string name="no_elements_found">No elements found</string>
 
+    <string name="please_provide_password">Please provide your password</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="verifying_password">Verifying password</string>
+    <string name="incorrect_password">Provided password is incorrect</string>
+
     <string name="companies">Companies</string>
     <string name="loading_companies">Loading companies</string>
     <string name="loading_projects">Loading projects</string>

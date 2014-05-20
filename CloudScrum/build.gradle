@@ -29,4 +29,6 @@ dependencies {
     compile 'com.google.api-client:google-api-client-gson:1.18.0-rc' exclude module: 'httpclient'
     compile 'com.google.android.gms:play-services:4.3.23'
     compile 'com.google.apis:google-api-services-drive:v2-rev123-1.18.0-rc'
+    compile 'com.google.http-client:google-http-client-jackson:1.18.0-rc'
+    compile fileTree(dir: 'libs', include: '*.jar')
 }
