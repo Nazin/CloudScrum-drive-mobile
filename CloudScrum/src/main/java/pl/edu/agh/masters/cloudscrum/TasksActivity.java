@@ -24,6 +24,8 @@ import pl.edu.agh.masters.cloudscrum.adapter.TaskListAdapter;
 
 public class TasksActivity extends BaseActivity {
 
+    static final int STARTED_FROM_FLOW = 3;
+
     private String companyId;
     private String companyTitle;
     private String projectId;
@@ -76,7 +78,7 @@ public class TasksActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == 3) {
+        if (resultCode == RESULT_OK && requestCode == STARTED_FROM_FLOW) {
             loadTasks();
         }
     }
@@ -113,7 +115,7 @@ public class TasksActivity extends BaseActivity {
 
                 try {
 
-                    SharedPreferences pref = getPreferences();
+                    SharedPreferences pref = getAppSharedPreferences();
                     String accountName = pref.getString(ACCOUNT_NAME, "");
                     String password = pref.getString(PASSWORD, "");
 
@@ -192,6 +194,6 @@ public class TasksActivity extends BaseActivity {
         intent.putExtra(RELEASE_TITLE, releaseTitle);
         intent.putExtra(RELEASE_ID, releaseId);
         intent.putExtra(TASK_DATA, task);
-        startActivityForResult(intent, 3);
+        startActivityForResult(intent, STARTED_FROM_FLOW);
     }
 }

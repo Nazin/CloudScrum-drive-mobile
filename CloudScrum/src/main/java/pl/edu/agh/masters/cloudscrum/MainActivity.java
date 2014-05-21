@@ -57,7 +57,7 @@ public class MainActivity extends BaseActivity {
 
         credential = getGoogleAccountCredential();
 
-        SharedPreferences pref = getPreferences();
+        SharedPreferences pref = getAppSharedPreferences();
         accountName = pref.getString(ACCOUNT_NAME, "");
         password = pref.getString(PASSWORD, "");
 
@@ -160,7 +160,7 @@ public class MainActivity extends BaseActivity {
 
     private void loadData() {
 
-        SharedPreferences pref = getPreferences();
+        SharedPreferences pref = getAppSharedPreferences();
         final SharedPreferences.Editor editor = pref.edit();
         editor.putString(ACCOUNT_NAME, accountName);
         editor.commit();
@@ -298,7 +298,7 @@ public class MainActivity extends BaseActivity {
                 }
 
                 if (isPasswordCorrect) {
-                    SharedPreferences pref = getPreferences();
+                    SharedPreferences pref = getAppSharedPreferences();
                     final SharedPreferences.Editor editor = pref.edit();
                     editor.putString(PASSWORD, password);
                     editor.commit();

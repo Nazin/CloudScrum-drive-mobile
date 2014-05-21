@@ -79,7 +79,7 @@ public class ReleasesActivity extends BaseActivity {
     private void loadReleases() {
 
         final GoogleAccountCredential credential = getGoogleAccountCredential();
-        SharedPreferences pref = getPreferences();
+        SharedPreferences pref = getAppSharedPreferences();
 
         String accountName = pref.getString(ACCOUNT_NAME, "");
         credential.setSelectedAccountName(accountName);

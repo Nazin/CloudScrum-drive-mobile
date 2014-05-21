@@ -1,12 +1,18 @@
 package pl.edu.agh.masters.cloudscrum;
 
+import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.view.View;
 import android.widget.TextView;
 
@@ -22,6 +28,13 @@ import java.util.List;
 public class TaskActivity extends BaseActivity {
 
     static final int TIMER_HANDLER_DELAY = 250;
+    static final int NOTIFICATION_TIMER_ID = 2019;
+
+    static final String NOTIFICATION_STARTED = "notificationStarted";
+    static final String TIMER_STARTED = "timerStarted";
+    static final String TIMER_START_TIME = "timerStartTime";
+    static final String ACTIVE_TIMER_TASK_ROW = "activeTimerTaskRow";
+    static final String ACTIVE_TIMER_RELEASE_ID = "activeTimerReleaseId";
 
     private String companyId;
     private String companyTitle;
@@ -96,6 +109,28 @@ public class TaskActivity extends BaseActivity {
         finish();
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        timerHandler.removeMessages(0);
+    }
+
+    @Override
+    public void onPause() {
+
+        if (isTimerStarted) {
+            SharedPreferences pref = getAppSharedPreferences();
+            final SharedPreferences.Editor editor = pref.edit();
+            editor.putString(ACTIVE_TIMER_RELEASE_ID, releaseId);
+            editor.putInt(ACTIVE_TIMER_TASK_ROW, task.getRowNo());
+            editor.putLong(TIMER_START_TIME, timerStartTime);
+            editor.commit();
+            showTimerNotification();
+        }
+
+        super.onPause();
+    }
+
     private void init(Intent intent) {
 
         companyTitle = intent.getStringExtra(COMPANY_TITLE);
@@ -105,6 +140,8 @@ public class TaskActivity extends BaseActivity {
         releaseTitle = intent.getStringExtra(RELEASE_TITLE);
         releaseId = intent.getStringExtra(RELEASE_ID);
         task = (Task)intent.getSerializableExtra(TASK_DATA);
+        isTimerStarted = intent.getBooleanExtra(TIMER_STARTED, false);
+        timerStartTime = intent.getLongExtra(TIMER_START_TIME, 0);
 
         ((TextView)findViewById(R.id.title)).setText(companyTitle + " > " + projectTitle + " > " + releaseTitle);
 
@@ -113,6 +150,7 @@ public class TaskActivity extends BaseActivity {
 
         setTaskData();
         setTimerButtonsListeners();
+        handleNotification();
     }
 
     private void setTaskData() {
@@ -157,14 +195,123 @@ public class TaskActivity extends BaseActivity {
 
             @Override
             public void onClick(View v) {
+                SharedPreferences pref = getAppSharedPreferences();
+                final SharedPreferences.Editor editor = pref.edit();
+                editor.putString(ACTIVE_TIMER_RELEASE_ID, "");
+                editor.commit();
                 isTimerStarted = false;
                 setTimerButtonsStates();
                 timerHandler.removeMessages(0);
                 saveTaskTime();
             }
         });
+    }
 
-        setTimerButtonsStates();//TODO temp
+    private void handleNotification() {
+
+        if (isTimerStarted) {
+            isBack = true;
+            setTimerButtonsStates();
+            hideTimerNotification();
+        } else {
+
+            SharedPreferences pref = getAppSharedPreferences();
+            int activeRow = pref.getInt(ACTIVE_TIMER_TASK_ROW, 0);
+            String activeReleaseId = pref.getString(ACTIVE_TIMER_RELEASE_ID, "");
+
+            if (!activeReleaseId.equals("")) {
+                if (activeRow == task.getRowNo() && releaseId.equals(activeReleaseId)) {
+                    isTimerStarted = true;
+                    timerStartTime = pref.getLong(TIMER_START_TIME, timerStartTime);
+                    setTimerButtonsStates();
+                    hideTimerNotification();
+                } else {
+                    startTimerButton.setEnabled(false);
+                    stopTimerButton.setEnabled(false);
+                }
+            } else {
+                setTimerButtonsStates();
+            }
+        }
+    }
+
+    private void hideTimerNotification() {
+
+        timerHandler.removeMessages(0);
+        timerHandler.sendEmptyMessageDelayed(0, TIMER_HANDLER_DELAY);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
+
+        SharedPreferences pref = getAppSharedPreferences();
+        final SharedPreferences.Editor editor = pref.edit();
+        editor.putBoolean(NOTIFICATION_STARTED, false);
+        editor.commit();
+    }
+
+    private void showTimerNotification() {
+
+        new Thread(
+
+            new Runnable() {
+
+                @Override
+                public void run() {
+
+                    SharedPreferences pref = getAppSharedPreferences(Activity.MODE_MULTI_PROCESS);
+                    final SharedPreferences.Editor editor = pref.edit();
+                    editor.putBoolean(NOTIFICATION_STARTED, true);
+                    editor.commit();
+
+                    boolean run = true;
+
+                    while (run) {
+
+                        long delay = System.currentTimeMillis() - timerStartTime;
+                        timerRunTime = (int) (delay / 1000);
+                        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(TaskActivity.this)
+                            .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.timer))
+                            .setSmallIcon(R.drawable.timer_small)
+                            .setContentTitle(task.getTitle())
+                            .setContentText(formatTime(task.getTime() + timerRunTime));
+
+                        notificationBuilder.setAutoCancel(true);
+                        notificationBuilder.setOngoing(true);
+
+                        Intent resultIntent = new Intent(TaskActivity.this, TaskActivity.class);
+                        TaskStackBuilder stackBuilder = TaskStackBuilder.create(TaskActivity.this);
+                        stackBuilder.addParentStack(TaskActivity.class);
+                        resultIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        resultIntent.putExtra(COMPANY_TITLE, companyTitle);
+                        resultIntent.putExtra(COMPANY_ID, companyId);
+                        resultIntent.putExtra(PROJECT_TITLE, projectTitle);
+                        resultIntent.putExtra(PROJECT_ID, projectId);
+                        resultIntent.putExtra(RELEASE_TITLE, releaseTitle);
+                        resultIntent.putExtra(RELEASE_ID, releaseId);
+                        resultIntent.putExtra(TASK_DATA, task);
+
+                        resultIntent.putExtra(TIMER_STARTED, isTimerStarted);
+                        resultIntent.putExtra(TIMER_START_TIME, timerStartTime);
+
+                        stackBuilder.addNextIntent(resultIntent);
+
+                        notificationBuilder.setContentIntent(stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT));
+                        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+                        try {
+                            Thread.sleep(TIMER_HANDLER_DELAY);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+
+                        notificationManager.notify(NOTIFICATION_TIMER_ID, notificationBuilder.build());
+                        run = pref.getBoolean(NOTIFICATION_STARTED, false);
+                    }
+
+                    NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    notificationManager.cancel(NOTIFICATION_TIMER_ID);
+                }
+            }
+        ).start();
     }
 
     private void saveTaskTime() {
@@ -188,7 +335,7 @@ public class TaskActivity extends BaseActivity {
 
                 try {
 
-                    SharedPreferences pref = getPreferences();
+                    SharedPreferences pref = getAppSharedPreferences();
                     String accountName = pref.getString(ACCOUNT_NAME, "");
                     String password = pref.getString(PASSWORD, "");
 

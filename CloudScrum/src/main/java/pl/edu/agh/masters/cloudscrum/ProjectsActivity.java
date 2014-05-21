@@ -71,7 +71,7 @@ public class ProjectsActivity extends BaseActivity {
     private void loadProjects() {
 
         final GoogleAccountCredential credential = getGoogleAccountCredential();
-        SharedPreferences pref = getPreferences();
+        SharedPreferences pref = getAppSharedPreferences();
 
         String accountName = pref.getString(ACCOUNT_NAME, "");
         credential.setSelectedAccountName(accountName);

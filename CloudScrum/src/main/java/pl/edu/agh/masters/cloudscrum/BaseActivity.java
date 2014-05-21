@@ -57,8 +57,12 @@ public class BaseActivity extends Activity {
         isBack = getIntent().getBooleanExtra(IS_BACK, false);
     }
 
-    protected SharedPreferences getPreferences() {
-        return getSharedPreferences(this.getClass().getPackage().toString(), Activity.MODE_PRIVATE);
+    protected SharedPreferences getAppSharedPreferences() {
+        return getAppSharedPreferences(Activity.MODE_PRIVATE);
+    }
+
+    protected SharedPreferences getAppSharedPreferences(int mode) {
+        return getSharedPreferences(this.getClass().getPackage().toString(), mode);
     }
 
     protected GoogleAccountCredential getGoogleAccountCredential() {
