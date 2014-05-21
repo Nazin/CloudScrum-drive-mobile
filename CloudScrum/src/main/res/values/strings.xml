@@ -23,4 +23,6 @@
 
     <string name="show_details">Show details</string>
     <string name="hide_details">Hide details</string>
+
+    <string name="saving_effort">Saving effort</string>
 </resources>

@@ -74,6 +74,13 @@ public class TasksActivity extends BaseActivity {
         finish();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && requestCode == 3) {
+            loadTasks();
+        }
+    }
+
     private void setList() {
 
         tasksAdapter = new TaskListAdapter(this, tasksData);
@@ -104,18 +111,15 @@ public class TasksActivity extends BaseActivity {
             @Override
             protected Void doInBackground(Void... params) {
 
-                URL SPREADSHEET_FEED_URL;
                 try {
 
                     SharedPreferences pref = getPreferences();
                     String accountName = pref.getString(ACCOUNT_NAME, "");
                     String password = pref.getString(PASSWORD, "");
 
-                    SPREADSHEET_FEED_URL = new URL("https://spreadsheets.google.com/feeds/worksheets/" + releaseId + "/private/full");
-
                     service.setUserCredentials(accountName, password);
 
-                    WorksheetFeed feed = service.getFeed(SPREADSHEET_FEED_URL, WorksheetFeed.class);
+                    WorksheetFeed feed = service.getFeed(new URL("https://spreadsheets.google.com/feeds/worksheets/" + releaseId + "/private/full"), WorksheetFeed.class);
                     List<WorksheetEntry> worksheets = feed.getEntries();
 
                     int selectedWorksheet = 0;
@@ -144,7 +148,7 @@ public class TasksActivity extends BaseActivity {
                             }
 
                             if (cell.getCell().getCol() == TASKS_TITLE_COLUMN && storyRow != cell.getCell().getRow()) {
-                                task = new Task(cell.getCell().getValue(), cell.getCell().getRow(), cell.getCell().getCol());
+                                task = new Task(cell.getCell().getValue(), cell.getCell().getRow(), selectedWorksheet);
                                 tasksData.add(task);
                             } else if (cell.getCell().getCol() == TASKS_EFFORT_COLUMN) {
                                 if (task != null && task.getRowNo() == cell.getCell().getRow()) {

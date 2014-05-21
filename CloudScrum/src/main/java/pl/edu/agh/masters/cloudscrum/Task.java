@@ -9,7 +9,7 @@ public class Task implements Serializable {
     private String title;
     private String details = "";
     private int rowNo;
-    private int colNo;
+    private int selectedWorksheet;
     private long time = 0;
 
     private String companyId;
@@ -19,10 +19,10 @@ public class Task implements Serializable {
     private String releaseId;
     private String releaseTitle;
 
-    public Task(String title, int rowNo, int colNo) {
+    public Task(String title, int rowNo, int selectedWorksheet) {
         this.title = title;
         this.rowNo = rowNo;
-        this.colNo = colNo;
+        this.selectedWorksheet = selectedWorksheet;
     }
 
     public String getReleaseTitle() {
@@ -57,12 +57,12 @@ public class Task implements Serializable {
         this.rowNo = rowNo;
     }
 
-    public int getColNo() {
-        return colNo;
+    public int getSelectedWorksheet() {
+        return selectedWorksheet;
     }
 
-    public void setColNo(int colNo) {
-        this.colNo = colNo;
+    public void setSelectedWorksheet(int selectedWorksheet) {
+        this.selectedWorksheet = selectedWorksheet;
     }
 
     public long getTime() {
