@@ -1,4 +1,4 @@
-package pl.edu.agh.masters.cloudscrum;
+package pl.edu.agh.masters.cloudscrum.model;
 
 import java.io.Serializable;
 
@@ -53,16 +53,8 @@ public class Task implements Serializable {
         return rowNo;
     }
 
-    public void setRowNo(int rowNo) {
-        this.rowNo = rowNo;
-    }
-
     public int getSelectedWorksheet() {
         return selectedWorksheet;
-    }
-
-    public void setSelectedWorksheet(int selectedWorksheet) {
-        this.selectedWorksheet = selectedWorksheet;
     }
 
     public long getTime() {

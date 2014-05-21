@@ -92,7 +92,7 @@ public class ProjectsActivity extends BaseActivity {
             @Override
             protected List<File> doInBackground(Void... params) {
                 try {
-                    return searchFiles(credential, "'" + companyId + "' in parents  and trashed = false and mimeType = 'application/vnd.google-apps.folder'");
+                    return searchFiles(credential, "'" + companyId + "' in parents and trashed = false and mimeType = 'application/vnd.google-apps.folder'");
                 } catch (Authorization e) {
                     e.printStackTrace();
                 }

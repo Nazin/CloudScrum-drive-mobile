@@ -25,4 +25,6 @@
     <string name="hide_details">Hide details</string>
 
     <string name="saving_effort">Saving effort</string>
+
+    <string name="all_tasks">All tasks</string>
 </resources>

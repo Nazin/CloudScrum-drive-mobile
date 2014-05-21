@@ -40,8 +40,6 @@ public class MainActivity extends BaseActivity {
     static final int REQUEST_ACCOUNT_PICKER = 1;
     static final int REQUEST_AUTHORIZATION = 2;
 
-    static final String COMPANY_DIRECTORY = "CloudScrum-";
-
     private GoogleAccountCredential credential;
     private String accountName;
     private String password;
@@ -194,7 +192,7 @@ public class MainActivity extends BaseActivity {
                     companiesData.clear();
 
                     for (File file : result) {
-                        if (file.getTitle().startsWith(COMPANY_DIRECTORY)){
+                        if (file.getTitle().startsWith(COMPANY_DIRECTORY)) {
                             file.setTitle(file.getTitle().substring(COMPANY_DIRECTORY.length()));
                             companiesData.add(file);
                         }
@@ -221,7 +219,7 @@ public class MainActivity extends BaseActivity {
         List<File> result = null;
 
         try {
-            result = searchFiles(credential, "title contains '" + COMPANY_DIRECTORY + "' and ('root' in parents or sharedWithMe) and trashed = false and mimeType = 'application/vnd.google-apps.folder'");
+            result = searchFiles(credential, COMPANIES_QUERY);
         } catch (Authorization e) {
             startActivityForResult(e.getOriginalException().getIntent(), REQUEST_AUTHORIZATION);
         }

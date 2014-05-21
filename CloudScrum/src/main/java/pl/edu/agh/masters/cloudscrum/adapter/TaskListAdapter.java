@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import pl.edu.agh.masters.cloudscrum.R;
-import pl.edu.agh.masters.cloudscrum.Task;
+import pl.edu.agh.masters.cloudscrum.model.Task;
 
 public class TaskListAdapter extends BaseAdapter {
 

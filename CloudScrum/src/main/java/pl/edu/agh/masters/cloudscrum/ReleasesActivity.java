@@ -23,8 +23,6 @@ import pl.edu.agh.masters.cloudscrum.exception.Authorization;
 
 public class ReleasesActivity extends BaseActivity {
 
-    static final String RELEASE_FILE = "release-";
-
     private String companyId;
     private String companyTitle;
     private String projectId;
@@ -118,7 +116,7 @@ public class ReleasesActivity extends BaseActivity {
                     releasesData.clear();
 
                     for (File file : result) {
-                        if (file.getTitle().startsWith(RELEASE_FILE)){
+                        if (file.getTitle().startsWith(RELEASE_FILE)) {
                             file.setTitle(file.getTitle().substring(RELEASE_FILE.length()));
                             releasesData.add(file);
                         }

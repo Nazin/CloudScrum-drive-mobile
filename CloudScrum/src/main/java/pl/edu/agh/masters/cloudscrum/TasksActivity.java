@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.edu.agh.masters.cloudscrum.adapter.TaskListAdapter;
+import pl.edu.agh.masters.cloudscrum.model.Task;
 
 public class TasksActivity extends BaseActivity {
 
@@ -198,7 +199,6 @@ public class TasksActivity extends BaseActivity {
         intent.putExtra(TASK_DATA, task);
         startActivityForResult(intent, STARTED_FROM_FLOW);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

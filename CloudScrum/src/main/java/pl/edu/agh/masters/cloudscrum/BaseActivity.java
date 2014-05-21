@@ -49,6 +49,11 @@ public class BaseActivity extends Activity {
     static final int TASKS_EFFORT_COLUMN = 8;
     static final int TASKS_DETAILS_COLUMN = 9;
 
+    static final String COMPANY_DIRECTORY = "CloudScrum-";
+    static final String RELEASE_FILE = "release-";
+
+    static final String COMPANIES_QUERY = "title contains '" + COMPANY_DIRECTORY + "' and ('root' in parents or sharedWithMe) and trashed = false and mimeType = 'application/vnd.google-apps.folder'";
+
     protected boolean isBack = false;
 
     @Override

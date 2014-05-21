@@ -25,6 +25,8 @@ import com.google.gdata.data.spreadsheet.WorksheetFeed;
 import java.net.URL;
 import java.util.List;
 
+import pl.edu.agh.masters.cloudscrum.model.Task;
+
 public class TaskActivity extends BaseActivity {
 
     static final int TIMER_HANDLER_DELAY = 250;
