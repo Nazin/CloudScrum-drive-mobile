@@ -95,7 +95,7 @@ public class AllTasksActivity extends BaseActivity {
                     service.setProtocolVersion(SpreadsheetService.Versions.V3);
                     service.setUserCredentials(accountName, password);
 
-                    tasksData.clear();
+                    List<Task> tempTasks = new ArrayList<Task>();
 
                     for (ReleaseFile file : files) {
 
@@ -117,7 +117,6 @@ public class AllTasksActivity extends BaseActivity {
                         Task task = null;
                         int storyRow = 0;
 
-                        //TODO filter by owner
                         for (CellEntry cell : cells.getEntries()) {
 
                             if (cell.getCell().getRow() >= STORIES_START_ROW) {
@@ -137,12 +136,16 @@ public class AllTasksActivity extends BaseActivity {
                                     task.setCompanyId(file.getCompanyId());
                                     task.setCompanyTitle(file.getCompanyTitle());
 
-                                    tasksData.add(task);
+                                    tempTasks.add(task);
+                                } else if (cell.getCell().getCol() == TASKS_OWNER_COLUMN) {
+                                    if (task != null && task.getRowNo() == cell.getCell().getRow()) {
+                                        task.setOwner(cell.getCell().getValue());
+                                    }
                                 } else if (cell.getCell().getCol() == TASKS_EFFORT_COLUMN) {
                                     if (task != null && task.getRowNo() == cell.getCell().getRow()) {
                                         task.setTime(Long.valueOf(cell.getCell().getValue()));
                                     }
-                                } else if (cell.getCell().getCol() == TASKS_DETAILS_COLUMN){
+                                } else if (cell.getCell().getCol() == TASKS_DETAILS_COLUMN) {
                                     if (task != null && task.getRowNo() == cell.getCell().getRow()) {
                                         task.setDetails(cell.getCell().getValue());
                                     }
@@ -150,6 +153,9 @@ public class AllTasksActivity extends BaseActivity {
                             }
                         }
                     }
+
+                    tasksData.clear();
+                    tasksData.addAll(filterTasks(tempTasks));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

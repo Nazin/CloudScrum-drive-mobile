@@ -138,12 +138,11 @@ public class TasksActivity extends BaseActivity {
 
                     URL cellFeedUrl = worksheets.get(selectedWorksheet).getCellFeedUrl();
                     CellFeed cells = service.getFeed(cellFeedUrl, CellFeed.class);
-                    tasksData.clear();
+                    List<Task> tempTasks = new ArrayList<Task>();
 
                     Task task = null;
                     int storyRow = 0;
 
-                    //TODO filter by owner
                     for (CellEntry cell : cells.getEntries()) {
 
                         if (cell.getCell().getRow() >= STORIES_START_ROW) {
@@ -154,18 +153,25 @@ public class TasksActivity extends BaseActivity {
 
                             if (cell.getCell().getCol() == TASKS_TITLE_COLUMN && storyRow != cell.getCell().getRow()) {
                                 task = new Task(cell.getCell().getValue(), cell.getCell().getRow(), selectedWorksheet);
-                                tasksData.add(task);
+                                tempTasks.add(task);
+                            } else if (cell.getCell().getCol() == TASKS_OWNER_COLUMN) {
+                                if (task != null && task.getRowNo() == cell.getCell().getRow()) {
+                                    task.setOwner(cell.getCell().getValue());
+                                }
                             } else if (cell.getCell().getCol() == TASKS_EFFORT_COLUMN) {
                                 if (task != null && task.getRowNo() == cell.getCell().getRow()) {
                                     task.setTime(Long.valueOf(cell.getCell().getValue()));
                                 }
-                            } else if (cell.getCell().getCol() == TASKS_DETAILS_COLUMN){
+                            } else if (cell.getCell().getCol() == TASKS_DETAILS_COLUMN) {
                                 if (task != null && task.getRowNo() == cell.getCell().getRow()) {
                                     task.setDetails(cell.getCell().getValue());
                                 }
                             }
                         }
                     }
+
+                    tasksData.clear();
+                    tasksData.addAll(filterTasks(tempTasks));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

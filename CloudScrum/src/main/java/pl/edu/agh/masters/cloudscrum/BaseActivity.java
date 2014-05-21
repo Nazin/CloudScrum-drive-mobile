@@ -18,9 +18,11 @@ import com.google.api.services.drive.model.FileList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import pl.edu.agh.masters.cloudscrum.exception.Authorization;
+import pl.edu.agh.masters.cloudscrum.model.Task;
 
 public class BaseActivity extends Activity {
 
@@ -46,6 +48,7 @@ public class BaseActivity extends Activity {
     static final int STORIES_START_ROW = 11;
     static final int STORIES_ID_COLUMN = 2;
     static final int TASKS_TITLE_COLUMN = 4;
+    static final int TASKS_OWNER_COLUMN = 5;
     static final int TASKS_EFFORT_COLUMN = 8;
     static final int TASKS_DETAILS_COLUMN = 9;
 
@@ -107,5 +110,19 @@ public class BaseActivity extends Activity {
         }
 
         return result;
+    }
+
+    protected List<Task> filterTasks(List<Task> tasks) {
+
+        SharedPreferences pref = getAppSharedPreferences();
+        String accountName = pref.getString(ACCOUNT_NAME, "");
+
+        for (Iterator<Task> taskIterator = tasks.iterator(); taskIterator.hasNext(); ) {
+            if (!taskIterator.next().getOwner().equals(accountName)) {
+                taskIterator.remove();
+            }
+        }
+
+        return tasks;
     }
 }
