@@ -221,7 +221,7 @@ public class MainActivity extends BaseActivity {
         List<File> result = null;
 
         try {
-            result = searchFiles(credential, "title contains '" + COMPANY_DIRECTORY + "' and 'root' in parents and trashed = false and mimeType = 'application/vnd.google-apps.folder'");
+            result = searchFiles(credential, "title contains '" + COMPANY_DIRECTORY + "' and ('root' in parents or sharedWithMe) and trashed = false and mimeType = 'application/vnd.google-apps.folder'");
         } catch (Authorization e) {
             startActivityForResult(e.getOriginalException().getIntent(), REQUEST_AUTHORIZATION);
         }
