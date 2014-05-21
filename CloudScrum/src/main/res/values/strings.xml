@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">CloudScrum</string>
-    <string name="action_settings">Settings</string>
+    <string name="show_all_tasks">Show all my tasks</string>
 
     <string name="no_elements_found">No elements found</string>
 
