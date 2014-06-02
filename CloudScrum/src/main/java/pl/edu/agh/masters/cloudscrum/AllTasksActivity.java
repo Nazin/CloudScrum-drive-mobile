@@ -105,7 +105,7 @@ public class AllTasksActivity extends BaseActivity {
                         int selectedWorksheet = 0;
 
                         for (int i=0; i<worksheets.size(); i++) {
-                            if (!worksheets.get(i).getTitle().toString().contains(CLOSED_ITERATION_IN_TITLE)) {
+                            if (!worksheets.get(i).getTitle().getPlainText().contains(CLOSED_ITERATION_IN_TITLE)) {
                                 selectedWorksheet = i;
                                 break;
                             }
