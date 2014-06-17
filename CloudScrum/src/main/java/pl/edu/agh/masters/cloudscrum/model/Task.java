@@ -9,6 +9,7 @@ public class Task implements Serializable {
     private String title;
     private String details = "";
     private String owner = "";
+    private String status = "";
     private int rowNo;
     private int selectedWorksheet;
     private long time = 0;
@@ -56,6 +57,14 @@ public class Task implements Serializable {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public int getRowNo() {

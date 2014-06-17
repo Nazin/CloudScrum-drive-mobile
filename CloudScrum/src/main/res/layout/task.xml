@@ -32,6 +32,34 @@
             android:id="@+id/taskTitle"
             />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/statusInfo"
+            android:layout_below="@id/taskTitle"
+            >
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                android:text="@string/task_status"
+                android:paddingLeft="10dp"
+                />
+
+            <Spinner
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/status"
+                android:entries="@array/task_statuses"
+                />
+
+        </LinearLayout>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

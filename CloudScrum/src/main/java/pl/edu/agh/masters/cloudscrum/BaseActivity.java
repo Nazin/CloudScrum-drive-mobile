@@ -49,6 +49,7 @@ public class BaseActivity extends Activity {
     static final int STORIES_ID_COLUMN = 2;
     static final int TASKS_TITLE_COLUMN = 4;
     static final int TASKS_OWNER_COLUMN = 5;
+    static final int TASKS_STATUS_COLUMN = 6;
     static final int TASKS_EFFORT_COLUMN = 8;
     static final int TASKS_DETAILS_COLUMN = 9;
 

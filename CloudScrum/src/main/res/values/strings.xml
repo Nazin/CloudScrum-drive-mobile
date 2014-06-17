@@ -25,6 +25,16 @@
     <string name="hide_details">Hide details</string>
 
     <string name="saving_effort">Saving effort</string>
+    <string name="saving_status">Saving status</string>
 
     <string name="all_tasks">All tasks</string>
+
+    <string name="task_status">Task status:</string>
+    <string-array name="task_statuses">
+        <item></item>
+        <item>In progress</item>
+        <item>Testing</item>
+        <item>Blocked</item>
+        <item>Completed</item>
+    </string-array>
 </resources>

@@ -14,6 +14,9 @@ import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
@@ -59,6 +62,7 @@ public class TaskActivity extends BaseActivity {
     private boolean taskDetailsVisible = false;
     private boolean isTimerStarted = false;
     private boolean isTaskSaved = false;
+    private boolean firstTimeStatusChanged = false;
 
     private long timerStartTime = 0;
     private long timerRunTime = 0;
@@ -153,6 +157,7 @@ public class TaskActivity extends BaseActivity {
         setTaskData();
         setTimerButtonsListeners();
         handleNotification();
+        setStatusSpinnerListener();
     }
 
     private void setTaskData() {
@@ -207,6 +212,30 @@ public class TaskActivity extends BaseActivity {
                 saveTaskTime();
             }
         });
+    }
+
+    private void setStatusSpinnerListener() {
+
+        final Spinner status = (Spinner)findViewById(R.id.status);
+
+        status.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                if (firstTimeStatusChanged) {
+                    task.setStatus(status.getSelectedItem().toString());
+                    saveTaskStatus();
+                } else {
+                    firstTimeStatusChanged = true;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+
+        ArrayAdapter statusAdapter = (ArrayAdapter) status.getAdapter();
+        status.setSelection(statusAdapter.getPosition(task.getStatus()));
     }
 
     private void handleNotification() {
@@ -317,8 +346,16 @@ public class TaskActivity extends BaseActivity {
     }
 
     private void saveTaskTime() {
-
         task.setTime(task.getTime() + timerRunTime);
+        saveTask(TASKS_EFFORT_COLUMN, String.valueOf(task.getTime()), TaskActivity.this.getString(R.string.saving_effort));
+    }
+
+    private void saveTaskStatus() {
+        saveTask(TASKS_STATUS_COLUMN, task.getStatus(), TaskActivity.this.getString(R.string.saving_status));
+    }
+
+    private void saveTask(final int column, final String value, final String message) {
+
         isTaskSaved = true;
 
         new AsyncTask<Void, Void, Void>() {
@@ -327,7 +364,7 @@ public class TaskActivity extends BaseActivity {
 
             protected void onPreExecute() {
                 dialog = new ProgressDialog(TaskActivity.this);
-                dialog.setMessage(TaskActivity.this.getString(R.string.saving_effort));
+                dialog.setMessage(message);
                 dialog.setCancelable(false);
                 dialog.show();
             }
@@ -350,8 +387,8 @@ public class TaskActivity extends BaseActivity {
                     CellFeed cells = service.getFeed(cellFeedUrl, CellFeed.class);
 
                     for (CellEntry cell : cells.getEntries()) {
-                        if (cell.getCell().getRow() == task.getRowNo() && cell.getCell().getCol() == TASKS_EFFORT_COLUMN) {
-                            cell.changeInputValueLocal(String.valueOf(task.getTime()));
+                        if (cell.getCell().getRow() == task.getRowNo() && cell.getCell().getCol() == column) {
+                            cell.changeInputValueLocal(value);
                             cell.update();
                             break;
                         }

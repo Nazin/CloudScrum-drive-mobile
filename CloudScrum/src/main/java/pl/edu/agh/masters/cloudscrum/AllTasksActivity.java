@@ -149,6 +149,10 @@ public class AllTasksActivity extends BaseActivity {
                                     if (task != null && task.getRowNo() == cell.getCell().getRow()) {
                                         task.setDetails(cell.getCell().getValue());
                                     }
+                                } else if (cell.getCell().getCol() == TASKS_STATUS_COLUMN) {
+                                    if (task != null && task.getRowNo() == cell.getCell().getRow()) {
+                                        task.setStatus(cell.getCell().getValue());
+                                    }
                                 }
                             }
                         }
