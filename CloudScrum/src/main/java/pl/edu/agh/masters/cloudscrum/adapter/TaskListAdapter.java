@@ -46,10 +46,20 @@ public class TaskListAdapter extends BaseAdapter {
         Task data = tasksList.get(position);
 
         if (convertView == null)
-            view = inflater.inflate(R.layout.row, null);
+            view = inflater.inflate(R.layout.task_row, null);
 
         ((TextView)view.findViewById(R.id.element_title)).setText(data.getTitle());
+        ((TextView)view.findViewById(R.id.element_effort)).setText("Effort: " + formatTime(data.getTime()));
 
         return view;
+    }
+
+    private String formatTime(long time) {
+
+        int hours = (int) (time / 3600);
+        int minutes = (int) ((time % 3600) / 60);
+        int seconds = (int) (time % 60);
+
+        return String.format("%02dh %02dm %02ds", hours, minutes, seconds);
     }
 }
